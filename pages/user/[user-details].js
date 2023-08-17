@@ -41,7 +41,8 @@ const UserDetails = ({ initialUser }) => {
         <section>
           <h3>Name: {initialUser?.name?.first}</h3>
           <h3>Last Name: {initialUser?.name?.last}</h3>
-          <h3>Cell Phone: {initialUser?.cell}</h3>
+          <h3>Age: {initialUser?.dob.age}</h3>
+          <h3>Phone Number: {initialUser?.cell}</h3>
           <h3>E-mail: {initialUser?.email}</h3>
           <h3>Gender: {initialUser?.gender}</h3>
         </section>
