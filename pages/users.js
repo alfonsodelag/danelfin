@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from "react";
+import Link from "next/link";
 
 const Users = () => {
   const [userList, setUserList] = useState(null);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(0);
-  const [startPageIndex, setStartPageIndex] = useState(0); // Added this state
+  const [startPageIndex, setStartPageIndex] = useState(0);
 
   const DB_NAME = "userDatabase";
   const STORE_NAME = "userStore";
-  const EXPIRATION_DURATION = 3600000; // 1 hour in milliseconds
+  const EXPIRATION_DURATION = 3600000;
 
   const openDatabase = () => {
     return new Promise((resolve, reject) => {
@@ -88,11 +89,15 @@ const Users = () => {
               (currentPage + 1) * itemsPerPage,
             )
             .map((user, index) => (
-              <div key={index}>
-                <h3>
-                  User: {user.name.first} {user.name.last}
-                </h3>
-              </div>
+              <Link
+                key={index}
+                href={{
+                  pathname: `/user/${user.login.uuid}`,
+                  query: { userData: JSON.stringify(user) },
+                }}
+              >
+                User: {user.name.first} {user.name.last}
+              </Link>
             ))}
         </div>
         {totalPages > 0 && (

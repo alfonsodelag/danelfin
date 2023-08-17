@@ -1,52 +1,69 @@
-import React, { useState } from "react";
+import React from "react";
 import Router from "next/router";
+import { useFormik } from "formik";
+import * as Yup from "yup";
 
 const Login = () => {
-  const [loginData, setLoginData] = useState({
-    email: "",
-    password: "",
+  const formik = useFormik({
+    initialValues: {
+      email: "",
+      password: "",
+    },
+    validationSchema: Yup.object({
+      email: Yup.string().email("Invalid email address").required("Required"),
+      password: Yup.string()
+        .min(6, "Must be 6 characters or more")
+        .required("Required"),
+    }),
+    onSubmit: (values) => {
+      if (values.email && values.password) {
+        Router.push("/users");
+      }
+    },
   });
-
-  const submitForm = async (e) => {
-    e.preventDefault();
-
-    if (loginData.email === "" || loginData.password === "") {
-      throw new Error("E-mail and Password must not be empty");
-    }
-    Router.push("/users");
-  };
 
   return (
     <div className="h-screen flex justify-center items-center">
-      <form onSubmit={submitForm} className="w-full h-full flex justify-center">
-        <div className="flex flex-col rounded-lg bg-gray-800 text-white m-8 h-2/5 w-1/4">
+      <form
+        onSubmit={formik.handleSubmit}
+        className="flex justify-center w-full"
+      >
+        <div className="flex flex-col rounded-lg bg-gray-800 text-white m-8 w-1/4">
           <div className="flex gap-4 flex-col p-5">
             <h1 className="text-center">LOGIN</h1>
             <div className="flex flex-col">
               <label>E-mail</label>
               <input
-                onChange={(e) =>
-                  setLoginData({ ...loginData, email: e.target.value })
-                }
+                name="email"
                 type="text"
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                value={formik.values.email}
                 className="rounded-lg text-black py-2"
                 placeholder="E-mail"
-              ></input>
+              />
+              {formik.touched.email && formik.errors.email ? (
+                <div className="text-red-500">{formik.errors.email}</div>
+              ) : null}
             </div>
             <div className="flex flex-col">
               <label>Password</label>
               <input
-                onChange={(e) =>
-                  setLoginData({ ...loginData, password: e.target.value })
-                }
-                type="text"
+                name="password"
+                type="password"
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                value={formik.values.password}
                 className="rounded-lg text-black py-2"
                 placeholder="Password"
-              ></input>
+              />
+              {formik.touched.password && formik.errors.password ? (
+                <div className="text-red-500">{formik.errors.password}</div>
+              ) : null}
             </div>
           </div>
-          <div className="flex justify-center">
-            <button className="bg-blue-800 rounded-lg w-1/2 py-2">
+          <div className="flex justify-center items-center mb-4">
+            <button type="submit" className="bg-blue-800 rounded-lg w-1/2 py-2">
               Submit
             </button>
           </div>
