@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Router from "next/router";
 
 const Signup = () => {
   const [signUpData, setSignUpData] = useState({

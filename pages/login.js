@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Router from "next/router";
 
 const Login = () => {
   const [loginData, setLoginData] = useState({
@@ -6,9 +7,13 @@ const Login = () => {
     password: "",
   });
 
-  const submitForm = async () => {
-    if (loginData.email === "" && loginData.password === "")
+  const submitForm = async (e) => {
+    e.preventDefault();
+
+    if (loginData.email === "" || loginData.password === "") {
       throw new Error("E-mail and Password must not be empty");
+    }
+    Router.push("/users");
   };
 
   return (
