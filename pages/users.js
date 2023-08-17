@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
+import Head from "next/head";
+import { useRouter } from "next/router";
 
 const Users = () => {
   const [userList, setUserList] = useState(null);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(0);
   const [startPageIndex, setStartPageIndex] = useState(0);
+  const router = useRouter();
 
   const DB_NAME = "userDatabase";
   const STORE_NAME = "userStore";
@@ -76,58 +79,79 @@ const Users = () => {
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
   }
 
   return (
-    <div className="h-screen flex justify-center items-center">
-      <div className="flex flex-col rounded-lg bg-gray-800 m-8 text-white h-5/6 w-full p-6">
-        <div className="flex flex-col gap-1">
-          {userList
-            ?.slice(
-              currentPage * itemsPerPage,
-              (currentPage + 1) * itemsPerPage,
-            )
-            .map((user, index) => (
-              <Link
-                key={index}
-                href={{
-                  pathname: `/user/${user.login.uuid}`,
-                  query: { userData: JSON.stringify(user) },
-                }}
-              >
-                User: {user.name.first} {user.name.last}
-              </Link>
-            ))}
-        </div>
-        {totalPages > 0 && (
-          <div className="flex gap-4 text-white w-full justify-between mt-10">
-            <button className="ml-2" onClick={handleLeftArrowClick}>
-              &lt;
-            </button>
-            {[...Array(8)].map((_, index) => {
-              const pageIndex = startPageIndex + index;
-              if (pageIndex < totalPages) {
-                return (
-                  <button
-                    key={pageIndex}
-                    onClick={() => setCurrentPage(pageIndex)}
-                    className={pageIndex === currentPage ? "active" : ""}
-                  >
-                    {pageIndex + 1}
-                  </button>
-                );
-              }
-              return null;
-            })}
-            <button className="mr-2" onClick={handleRightArrowClick}>
-              &gt;
-            </button>
+    <>
+      <Head>
+        <title>User List</title>
+        <meta
+          name="description"
+          content="A list of users fetched from the API"
+        />
+      </Head>
+      <main className="h-screen flex justify-center items-center">
+        <div className="flex flex-col rounded-lg bg-gray-800 m-8 text-white h-2/3 w-5/6 p-6">
+          <h1 className="text-white text-center text-3xl">USER LIST</h1>
+          <div className="flex flex-col gap-1">
+            {userList
+              ?.slice(
+                currentPage * itemsPerPage,
+                (currentPage + 1) * itemsPerPage,
+              )
+              .map((user, index) => (
+                <Link key={index} href={`/user/${user.login.uuid}`}>
+                  User: {user.name.first} {user.name.last}
+                </Link>
+              ))}
           </div>
-        )}
-      </div>
-    </div>
+          <div className="relative bottom-2">
+            {totalPages > 0 && (
+              <nav className="flex gap-4 text-white w-full justify-between mt-10">
+                <button className="ml-2" onClick={handleLeftArrowClick}>
+                  &lt;
+                </button>
+                {[...Array(8)].map((_, index) => {
+                  const pageIndex = startPageIndex + index;
+                  if (pageIndex < totalPages) {
+                    return (
+                      <button
+                        key={pageIndex}
+                        onClick={() => setCurrentPage(pageIndex)}
+                        className={pageIndex === currentPage ? "active" : ""}
+                      >
+                        {pageIndex + 1}
+                      </button>
+                    );
+                  }
+                  return null;
+                })}
+                <button className="mr-2" onClick={handleRightArrowClick}>
+                  &gt;
+                </button>
+              </nav>
+            )}
+          </div>
+        </div>
+      </main>
+    </>
   );
 };
+
+export async function getServerSideProps() {
+  const response = await fetch("https://randomuser.me/api/?results=5000");
+  const data = await response.json();
+
+  return {
+    props: {
+      initialUsers: data,
+    },
+  };
+}
 
 export default Users;
