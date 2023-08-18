@@ -1,14 +1,12 @@
-import React, { useEffect, useState } from "react";
-import Link from "next/link";
 import Head from "next/head";
-import { useRouter } from "next/router";
+import Link from "next/link";
+import React, { useEffect, useState } from "react";
 
 const Users = () => {
   const [userList, setUserList] = useState(null);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(0);
   const [startPageIndex, setStartPageIndex] = useState(0);
-  const router = useRouter();
 
   const DB_NAME = "userDatabase";
   const STORE_NAME = "userStore";
@@ -95,10 +93,11 @@ const Users = () => {
           content="A list of users fetched from the API"
         />
       </Head>
-      <main className="h-screen flex justify-center items-center">
-        <div className="flex flex-col rounded-lg bg-gray-800 m-8 text-white h-2/3 w-5/6 p-6">
-          <h1 className="text-white text-center text-3xl">USER LIST</h1>
-          <div className="flex flex-col gap-1">
+
+      <main className="h-screen flex justify-center items-center bg-gray-100">
+        <div className="flex flex-col rounded-lg shadow-lg bg-white m-8 text-gray-800 h-2/3 w-5/6 p-8">
+          <h1 className="text-gray-900 text-center text-4xl mb-6">User List</h1>
+          <div className="flex flex-col gap-2 overflow-y-auto mb-6">
             {userList
               ?.slice(
                 currentPage * itemsPerPage,
@@ -110,33 +109,42 @@ const Users = () => {
                 </Link>
               ))}
           </div>
-          <div className="relative bottom-2">
-            {totalPages > 0 && (
-              <nav className="flex gap-4 text-white w-full justify-between mt-10">
-                <button className="ml-2" onClick={handleLeftArrowClick}>
-                  &lt;
-                </button>
-                {[...Array(8)].map((_, index) => {
-                  const pageIndex = startPageIndex + index;
-                  if (pageIndex < totalPages) {
-                    return (
-                      <button
-                        key={pageIndex}
-                        onClick={() => setCurrentPage(pageIndex)}
-                        className={pageIndex === currentPage ? "active" : ""}
-                      >
-                        {pageIndex + 1}
-                      </button>
-                    );
-                  }
-                  return null;
-                })}
-                <button className="mr-2" onClick={handleRightArrowClick}>
-                  &gt;
-                </button>
-              </nav>
-            )}
-          </div>
+
+          {totalPages > 0 && (
+            <nav className="flex gap-4 text-gray-800 w-full justify-between mt-6 border-t pt-6">
+              <button
+                className="ml-2 hover:bg-gray-200 p-2 rounded"
+                onClick={handleLeftArrowClick}
+              >
+                &lt;
+              </button>
+              {[...Array(8)].map((_, index) => {
+                const pageIndex = startPageIndex + index;
+                if (pageIndex < totalPages) {
+                  return (
+                    <button
+                      key={pageIndex}
+                      onClick={() => setCurrentPage(pageIndex)}
+                      className={`p-2 rounded ${
+                        pageIndex === currentPage
+                          ? "bg-gray-300"
+                          : "hover:bg-gray-200"
+                      }`}
+                    >
+                      {pageIndex + 1}
+                    </button>
+                  );
+                }
+                return null;
+              })}
+              <button
+                className="mr-2 hover:bg-gray-200 p-2 rounded"
+                onClick={handleRightArrowClick}
+              >
+                &gt;
+              </button>
+            </nav>
+          )}
         </div>
       </main>
     </>
